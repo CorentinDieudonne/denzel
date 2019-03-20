@@ -1,5 +1,5 @@
 require('dotenv').config()
-const uri = process.env.DB_DATABASE_URL;
+const uri = "mongodb+srv://CorentinDieudonne:corentin@denzel-2xis4.gcp.mongodb.net/test?retryWrites=true";
 const Express = require("express");
 const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
