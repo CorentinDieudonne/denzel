@@ -1,34 +1,37 @@
-require('dotenv').config()
-const uri = "mongodb+srv://CorentinDieudonne:corentin@denzel-2xis4.gcp.mongodb.net/test?retryWrites=true";
 const Express = require("express");
 const BodyParser = require("body-parser");
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
-const IMDB = require('./src/IMDB');
-const DENZEL_IMDB_ID = "nm0000243";
-const DATABASE_NAME = "denzel";
-var port = process.env.PORT || 9292;
-var exp = Express();
 
-exp.use(BodyParser.json());
-exp.use(BodyParser.urlencoded({ extended: true }));
+const imdb = require('./src/imdb');
+const DENZEL_IMDB_ID = 'nm0000243';
+
+const CONNECTION_URL = "mongodb+srv://CorentinDieudonne:corentin@denzel-2xis4.gcp.mongodb.net/test?retryWrites=true";
+const DATABASE_NAME = "movies";
+
+var port = process.env.PORT || 9292;
+
+var app = Express();
+
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
 
 var database, collection;
 
-exp.listen(port, () => {
-    MongoClient.connect(uri, { useNewUrlParser: true }, (error, client) => {
+app.listen(port, () => {
+    MongoClient.connect(CONNECTION_URL, { useNewUrlParser: true }, (error, client) => {
         if(error) {
             throw error;
         }
         database = client.db(DATABASE_NAME);
         collection = database.collection("movies");
-        console.log("Connected to '" + DATABASE_NAME + " 'database !");
+        console.log("Connected to `" + DATABASE_NAME + "`" + ` on port ${port}!`);
     });
 });
 
-exp.get("/movies/populate", async (request, response) => {
+app.get("/movies/populate", async (request, response) => {
     try {
-      const movies = await IMDB(DENZEL_IMDB_ID);
+      const movies = await imdb(DENZEL_IMDB_ID);
       collection.insertMany(movies);
       result = {
         "total": movies.length
@@ -40,7 +43,7 @@ exp.get("/movies/populate", async (request, response) => {
     }
 });
 
-exp.get("/movies", (request, response) => {
+app.get("/movies", (request, response) => {
     collection.find({"metascore": {$gte: 70}}).toArray((error, result) => {
         if(error) {
             return response.status(500).send(error);
@@ -49,7 +52,7 @@ exp.get("/movies", (request, response) => {
     });
 });
 
-exp.get("/movies/search", (request, response) => {
+app.get("/movies/search", (request, response) => {
     var limit = (request.query.limit === undefined ? 5 : parseInt(request.query.limit));
     var metascore = (request.query.metascore === undefined ? 0 : parseInt(request.query.metascore));
 
@@ -61,7 +64,7 @@ exp.get("/movies/search", (request, response) => {
     });
 });
 
-exp.get("/movies/:id", (request, response) => {
+app.get("/movies/:id", (request, response) => {
     collection.findOne({ "id": request.params.id }, (error, result) => {
         if(error) {
             return response.status(500).send(error);
@@ -69,8 +72,8 @@ exp.get("/movies/:id", (request, response) => {
         response.send(result);
     });
 });
-//To get the
-exp.post("/movies/:id", (request, response) => {
+
+app.post("/movies/:id", (request, response) => {
     if(request.body.review === undefined || request.body.date === undefined) {
         return response.status(400).send("You have to specify review and date");
     }
