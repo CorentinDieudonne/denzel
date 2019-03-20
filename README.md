@@ -1,4 +1,4 @@
-** THE DEPLOYEMENT IS : https://denzel-app.herokuapp.com/movies/populate **
+**THE DEPLOYEMENT IS :** [API deployed](https://denzel-app.herokuapp.com/movies/populate)
 
 
 # DENZEL
