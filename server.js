@@ -7,7 +7,7 @@ const ObjectId = require("mongodb").ObjectID;
 const IMDB = require('./src/IMDB');
 const DENZEL_IMDB_ID = "nm0000243";
 const DATABASE_NAME = "denzel";
-
+var port = process.env.PORT || 9292;
 var exp = Express();
 
 exp.use(BodyParser.json());
@@ -15,7 +15,7 @@ exp.use(BodyParser.urlencoded({ extended: true }));
 
 var database, collection;
 
-exp.listen(process.env.PORT, () => {
+exp.listen(port, () => {
     MongoClient.connect(uri, { useNewUrlParser: true }, (error, client) => {
         if(error) {
             throw error;
