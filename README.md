@@ -1,3 +1,6 @@
+** THE DEPLOYEMENT IS : https://denzel-app.herokuapp.com/movies **
+
+
 # DENZEL
 
 > The must-watch Denzel's movies
